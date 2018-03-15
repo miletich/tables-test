@@ -7,7 +7,7 @@ import Table from '../components/Table';
 const Tables = () => (
   <Switch>
     {Object.keys(data).map(key => (
-      <Route path={`/tables/${key}`} component={() => <Table key={key} data={data[key]} />} />
+      <Route key={key} path={`/tables/${key}`} component={() => <Table data={data[key]} />} />
     ))}
     <Route component={() => <p>404</p>} />
   </Switch>
