@@ -1,6 +1,11 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  output: {
+    // needed to make react-roter's nested routes work with webpack 4
+    // ... despite the webpack guys saying we no longer need to specify this
+    publicPath: "/",
+  },
   module: {
     rules: [
       {
@@ -20,6 +25,9 @@ module.exports = {
         ],
       },
     ],
+  },
+  devServer: {
+    historyApiFallback: true,
   },
   plugins: [
     new HtmlWebPackPlugin({
