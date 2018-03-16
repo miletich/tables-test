@@ -2,30 +2,71 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import moment from 'moment';
+import removeAccents from 'remove-accents';
 
 import { formatTitle } from '../helpers';
 import TableHeading from './TableHeading';
-
-const sortByKey = key => (a, b) => {
-  if (typeof a[key] === 'string') {
-    return a[key].localeCompare(b[key]);
-  } else if (typeof a[key] === 'object') {
-    return (
-      moment(`${b[key].date} ${b[key].time}`).valueOf() -
-      moment(`${a[key].date} ${a[key].time}`).valueOf()
-    );
-  }
-  return a[key] - b[key];
-};
 
 class Table extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.data, sortBy: null, sortedData: this.props.data, filters: {},
+      data: this.props.data,
+      sortBy: null,
+      filters: {},
+      processedData: this.props.data,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleTitleClick = this.handleTitleClick.bind(this);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { sortBy, filters, data } = this.state;
+
+    const haveFiltersChanged = () => {
+      // helps avoid more expensive computation below when possible
+      if (Object.keys(prevState.filters).length !== Object.keys(filters).length) {
+        return true;
+      }
+      return Object.keys(filters)
+        .map(key => prevState.filters[key] !== filters[key])
+        .includes(true);
+    };
+
+    // usually, i'd make these helpers general-purpose and extract them in a separate module
+    const sortByKey = key => (a, b) => {
+      if (typeof a[key] === 'string') {
+        return a[key].localeCompare(b[key]);
+      } else if (typeof a[key] === 'object') {
+        return (
+          moment(`${b[key].date} ${b[key].time}`).valueOf() -
+          moment(`${a[key].date} ${a[key].time}`).valueOf()
+        );
+      }
+      return a[key] - b[key];
+    };
+    const processString = str => removeAccents(str).toLowerCase();
+    const contains = (key, value) => obj => processString(obj[key]).includes(processString(value));
+    const isEqual = (key, value) => obj => obj[key] === value;
+    const isGreaterThan = (key, value) => obj => obj[key] > value;
+    // enables applying all active filters without requiring multiple array iterations
+    const composePredicates = predicates => predicates.reduce((acc, cur) => x => acc(x) && cur(x));
+    const filterData = () =>
+      data.filter(composePredicates(Object.entries(filters).map(([key, value]) => contains(key, value))));
+    // as soon as react 16.3 is out, it will start printing deprecation warnings for all `will`
+    // lifecycle methods, making this particular rule obsolete
+    /* eslint-disable react/no-did-update-set-state */
+    if (haveFiltersChanged()) {
+      this.setState({
+        processedData: sortBy ? [...filterData()].sort(sortByKey(sortBy)) : filterData(),
+      });
+    }
+    if (sortBy !== prevState.sortBy) {
+      this.setState({
+        processedData: sortBy ? [...filterData()].sort(sortByKey(sortBy)) : filterData(),
+      });
+    }
+    /* eslint-enable */
   }
 
   handleChange(e) {
@@ -35,16 +76,14 @@ class Table extends Component {
     });
   }
 
-  handleTitleClick(sorter) {
-    const { data, sortBy } = this.state;
+  handleTitleClick(sortBy) {
     this.setState({
-      sortBy: sortBy === sorter ? null : sorter,
-      sortedData: sortBy === sorter ? data : [...data].sort(sortByKey(sorter)),
+      sortBy,
     });
   }
 
   render() {
-    const { data, sortedData } = this.state;
+    const { data, processedData } = this.state;
     return (
       <div style={{ minWidth: 970 }}>
         <div style={{ textAlign: 'center' }}>
@@ -77,7 +116,7 @@ class Table extends Component {
             </tr>
           </thead>
           <tbody>
-            {sortedData.map(item => (
+            {processedData.map(item => (
               <tr key={item.id}>
                 {Object.values(item).map((value) => {
                   if (typeof value === 'object') {
