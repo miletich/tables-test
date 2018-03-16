@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 
 import Navigation from './components/Navigation';
 import Tables from './containers/Tables';
+import UiMessage from './components/UiMessage';
 
 const App = () => (
   <div>
@@ -12,7 +13,7 @@ const App = () => (
         <Switch>
           <Redirect exact from="/" to="/tables/carPurchases" />
           <Route path="/tables/:table?" component={Tables} />
-          <Route component={() => <div>404</div>} />
+          <Route component={() => <UiMessage>404: Not found</UiMessage>} />
         </Switch>
       </div>
     </Router>

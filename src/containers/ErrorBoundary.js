@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import UiMessage from '../components/UiMessage';
+
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +18,7 @@ class ErrorBoundary extends Component {
 
   render() {
     return this.state.hasError
-      ? <div>Something went wrong</div>
+      ? <UiMessage>Something went wrong</UiMessage>
       : this.props.children;
   }
 }
