@@ -52,7 +52,12 @@ class Table extends Component {
     // enables applying all active filters without requiring multiple array iterations
     const composePredicates = predicates => predicates.reduce((acc, cur) => x => acc(x) && cur(x));
     const filterData = () =>
-      data.filter(composePredicates(Object.entries(filters).map(([key, value]) => contains(key, value))));
+      data.filter(composePredicates(Object.entries(filters).map(([key, value]) => {
+        if (key === 'payment_method' && value) {
+          return isEqual(key, value);
+        }
+        return contains(key, value);
+      })));
     // as soon as react 16.3 is out, it will start printing deprecation warnings for all `will`
     // lifecycle methods, making this particular rule obsolete
     /* eslint-disable react/no-did-update-set-state */
@@ -90,8 +95,50 @@ class Table extends Component {
           <h2 className="h2">Filter table</h2>
           <form className="form-inline" style={{ textAlign: 'center' }}>
             <div className="form-row" style={{ margin: '0 auto' }}>
-              {Object.entries(data[0]).map(([key, value]) =>
-                  key !== 'id' && (
+              {Object.entries(data[0]).map(([key]) => {
+                if (key !== 'id') {
+                  if (key === 'payment_method') {
+                    return (
+                      <div key={key} className="col">
+                        <select
+                          id={key}
+                          className="form-control"
+                          data-filter={key}
+                          onChange={this.handleChange}
+                        >
+                          <option value="">Any payment method</option>
+                          {Array.from(new Set(data.map(obj => obj.payment_method)))
+                            .sort()
+                            .map(method => (
+                              <option key={method} value={method}>
+                                {method}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    );
+                  } else if (key === 'datetime') {
+                    return (
+                      <div key={key} className="col">
+                        <select
+                          id={key}
+                          className="form-control"
+                          data-filter={key}
+                          onChange={this.handleChange}
+                        >
+                          <option value="">Any time</option>
+                          {Array.from(new Set(data.map(obj => moment(`${obj.datetime.date} ${obj.datetime.time}`).fromNow())))
+                            .sort()
+                            .map(time => (
+                              <option key={time} value={time}>
+                                {time}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    );
+                  }
+                  return (
                     <div key={key} className="col">
                       <input
                         type="text"
@@ -102,7 +149,10 @@ class Table extends Component {
                         data-filter={key}
                       />
                     </div>
-                  ))}
+                  );
+                }
+                return null;
+              })}
             </div>
           </form>
         </div>
