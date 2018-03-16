@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Moment from 'react-moment';
-import moment from 'moment';
 import removeAccents from 'remove-accents';
 
-import { formatTitle } from '../helpers';
+import { formatTitle, toIsoTime, getUniqueVals } from '../helpers';
 import TableHeading from './TableHeading';
 
 class Table extends Component {
@@ -38,23 +36,22 @@ class Table extends Component {
       if (typeof a[key] === 'string') {
         return a[key].localeCompare(b[key]);
       } else if (typeof a[key] === 'object') {
-        return (
-          moment(`${b[key].date} ${b[key].time}`).valueOf() -
-          moment(`${a[key].date} ${a[key].time}`).valueOf()
-        );
+        return toIsoTime(b[key]).diff(toIsoTime(a[key]));
       }
       return a[key] - b[key];
     };
     const processString = str => removeAccents(str).toLowerCase();
     const contains = (key, value) => obj => processString(obj[key]).includes(processString(value));
     const isEqual = (key, value) => obj => obj[key] === value;
-    const isGreaterThan = (key, value) => obj => obj[key] > value;
+    const isInTimeRange = (key, value) => obj => toIsoTime(obj[key]).fromNow().includes(value);
     // enables applying all active filters without requiring multiple array iterations
     const composePredicates = predicates => predicates.reduce((acc, cur) => x => acc(x) && cur(x));
     const filterData = () =>
       data.filter(composePredicates(Object.entries(filters).map(([key, value]) => {
         if (key === 'payment_method' && value) {
           return isEqual(key, value);
+        } else if (key === 'datetime') {
+          return isInTimeRange(key, value);
         }
         return contains(key, value);
       })));
@@ -66,9 +63,11 @@ class Table extends Component {
         processedData: sortBy ? [...filterData()].sort(sortByKey(sortBy)) : filterData(),
       });
     }
-    if (sortBy !== prevState.sortBy) {
+    if (sortBy && sortBy !== prevState.sortBy) {
       this.setState({
-        processedData: sortBy ? [...filterData()].sort(sortByKey(sortBy)) : filterData(),
+        processedData: Object.keys(filters).length
+          ? [...filterData()].sort(sortByKey(sortBy))
+          : [...data].sort(sortByKey(sortBy)),
       });
     }
     /* eslint-enable */
@@ -107,7 +106,7 @@ class Table extends Component {
                           onChange={this.handleChange}
                         >
                           <option value="">Any payment method</option>
-                          {Array.from(new Set(data.map(obj => obj.payment_method)))
+                          {getUniqueVals(data.map(obj => obj.payment_method))
                             .sort()
                             .map(method => (
                               <option key={method} value={method}>
@@ -127,13 +126,14 @@ class Table extends Component {
                           onChange={this.handleChange}
                         >
                           <option value="">Any time</option>
-                          {Array.from(new Set(data.map(obj => moment(`${obj.datetime.date} ${obj.datetime.time}`).fromNow())))
-                            .sort()
-                            .map(time => (
-                              <option key={time} value={time}>
-                                {time}
-                              </option>
-                            ))}
+                          {getUniqueVals(data
+                              .map(obj => toIsoTime(obj.datetime))
+                              .sort((a, b) => b.diff(a))
+                              .map(time => time.fromNow())).map(time => (
+                                <option key={time} value={time}>
+                                  {time}
+                                </option>
+                          ))}
                         </select>
                       </div>
                     );
@@ -170,11 +170,7 @@ class Table extends Component {
               <tr key={item.id}>
                 {Object.values(item).map((value) => {
                   if (typeof value === 'object') {
-                    return (
-                      <td key={value}>
-                        <Moment fromNow>{`${value.date} ${value.time}`}</Moment>
-                      </td>
-                    );
+                    return <td key={value}>{toIsoTime(value).fromNow()}</td>;
                   } else if (typeof value === 'string') {
                     if (value.includes('@')) {
                       return (
