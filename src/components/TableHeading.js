@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const formatTitle = string =>
-  `${string.charAt(0).toUpperCase()}${string.slice(1)}`.replace('_', ' ');
+import { formatTitle } from '../helpers';
 
 class TableHeading extends React.PureComponent {
   constructor() {
@@ -14,6 +13,7 @@ class TableHeading extends React.PureComponent {
     e.preventDefault();
     this.props.onHandleTitleClick(e.target.dataset.filter);
   }
+
   render() {
     const { firstRow } = this.props;
     return firstRow.map(([key, value]) => {

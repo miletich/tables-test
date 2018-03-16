@@ -4,7 +4,14 @@ import { NavLink } from 'react-router-dom';
 import data from '../data/';
 
 const Navigation = () => (
-  <nav style={{ backgroundColor: '#333', padding: 16, textAlign: 'center' }}>
+  <nav
+    style={{
+      backgroundColor: '#333',
+      minWidth: 970,
+      padding: 16,
+      textAlign: 'center',
+    }}
+  >
     {Object.keys(data).map(key => (
       <NavLink
         key={key}
