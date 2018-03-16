@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import removeAccents from 'remove-accents';
 
-import { formatTitle, toIsoTime, getUniqueVals } from '../helpers';
+import {
+  formatTitle,
+  toIsoTime,
+  getUniqueVals,
+  sortByKey,
+  composePredicates,
+  isEqual,
+  isInTimeRange,
+  contains,
+} from '../helpers';
 import TableHeading from './TableHeading';
 
 class Table extends Component {
@@ -31,21 +39,6 @@ class Table extends Component {
         .includes(true);
     };
 
-    // usually, i'd make these helpers general-purpose and extract them in a separate module
-    const sortByKey = key => (a, b) => {
-      if (typeof a[key] === 'string') {
-        return a[key].localeCompare(b[key]);
-      } else if (typeof a[key] === 'object') {
-        return toIsoTime(b[key]).diff(toIsoTime(a[key]));
-      }
-      return a[key] - b[key];
-    };
-    const processString = str => removeAccents(str).toLowerCase();
-    const contains = (key, value) => obj => processString(obj[key]).includes(processString(value));
-    const isEqual = (key, value) => obj => obj[key] === value;
-    const isInTimeRange = (key, value) => obj => toIsoTime(obj[key]).fromNow().includes(value);
-    // enables applying all active filters without requiring multiple array iterations
-    const composePredicates = predicates => predicates.reduce((acc, cur) => x => acc(x) && cur(x));
     const filterData = () =>
       data.filter(composePredicates(Object.entries(filters).map(([key, value]) => {
         if (key === 'payment_method' && value) {
@@ -81,9 +74,7 @@ class Table extends Component {
   }
 
   handleTitleClick(sortBy) {
-    this.setState({
-      sortBy,
-    });
+    this.setState({ sortBy });
   }
 
   render() {
