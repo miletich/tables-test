@@ -90,10 +90,10 @@ class Table extends Component {
     const { data, processedData } = this.state;
     return (
       <div style={{ minWidth: 970 }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2 className="h2">Filter table</h2>
-          <form className="form-inline" style={{ textAlign: 'center' }}>
-            <div className="form-row" style={{ margin: '0 auto' }}>
+        <div className="mt-5 mb-5 mx-auto">
+          <h2 className="h2 text-center mb-3">Filter table</h2>
+          <form className="form-inline text-center">
+            <div className="form-row mx-auto">
               {Object.entries(data[0]).map(([key]) => {
                 if (key !== 'id') {
                   if (key === 'payment_method') {

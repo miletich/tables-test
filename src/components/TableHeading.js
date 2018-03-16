@@ -22,7 +22,7 @@ class TableHeading extends React.PureComponent {
           <th
             key={key}
             scope="cell"
-            style={{ textAlign: 'right' }}
+            className="text-right"
             data-filter={key}
             onClick={this.sortValues}
           >
