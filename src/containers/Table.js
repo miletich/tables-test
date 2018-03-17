@@ -76,7 +76,7 @@ class Table extends Component {
     const { data, processedData } = this.state;
     return (
       <div style={{ minWidth: 970 }}>
-        <TableFilters data={data} onHandleChange={this.handleChange} />
+        <TableFilters data={data} onHandleChange={this.handleChange} name={this.props.name} />
         {processedData.length ? (
           <table className="table">
             <TableHead>
@@ -97,6 +97,7 @@ class Table extends Component {
 
 Table.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 export default Table;

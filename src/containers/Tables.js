@@ -9,7 +9,12 @@ const Tables = () => (
   <div className="container">
     <Switch>
       {Object.keys(data).map(key => (
-        <Route key={key} exact path={`/tables/${key}`} component={() => <Table data={data[key]} />} />
+        <Route
+          key={key}
+          exact
+          path={`/tables/${key}`}
+          component={() => <Table data={data[key]} name={key} />}
+        />
       ))}
       <Route component={() => <UiMessage>404: Not found</UiMessage>} />
     </Switch>
