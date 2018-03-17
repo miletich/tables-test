@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  toIsoTime,
   sortByKey,
   composePredicates,
   isEqual,
@@ -11,6 +10,7 @@ import {
 } from '../helpers';
 import TableHeading from './TableHeading';
 import TableFilters from './TableFilters';
+import TableBody from './TableBody';
 
 class Table extends Component {
   constructor(props) {
@@ -90,37 +90,7 @@ class Table extends Component {
               />
             </tr>
           </thead>
-          <tbody>
-            {processedData.map(item => (
-              <tr key={item.id}>
-                {Object.values(item).map((value) => {
-                  if (typeof value === 'object') {
-                    return <td key={value}>{toIsoTime(value).fromNow()}</td>;
-                  } else if (typeof value === 'string') {
-                    if (value.includes('@')) {
-                      return (
-                        <td key={value}>
-                          <a href={`mailto:${value}`}>{value}</a>
-                        </td>
-                      );
-                    } else if (value.includes('$')) {
-                      return (
-                        <td key={value} style={{ textAlign: 'right' }}>
-                          {value}
-                        </td>
-                      );
-                    }
-                    return <td key={value}>{value}</td>;
-                  }
-                  return (
-                    <td key={value} style={{ textAlign: 'right' }}>
-                      {value}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
+          <TableBody data={processedData} />
         </table>
       </div>
     );
