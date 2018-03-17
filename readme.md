@@ -1,4 +1,4 @@
-# TradeCore FE Test
+# Tables FE Test
 
 ## Running the project
 
