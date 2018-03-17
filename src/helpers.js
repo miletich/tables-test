@@ -1,5 +1,6 @@
 import moment from 'moment';
 import removeAccents from 'remove-accents';
+import PropTypes from 'prop-types';
 
 export const formatTitle = string =>
   `${string.charAt(0).toUpperCase()}${string.slice(1)}`.replace('_', ' ');
@@ -36,3 +37,32 @@ export const isInTimeRange = (key, value) => obj =>
 // enables applying all active filters without requiring multiple array iterations
 export const composePredicates = predicates =>
   predicates.reduce((acc, cur) => x => acc(x) && cur(x));
+
+export const shouldRightAlign = value =>
+  (typeof value === 'string' && value.includes('$')) || typeof value === 'number';
+
+// actually a constant, not a helper function
+export const dataPropType = PropTypes.arrayOf(PropTypes.oneOfType([
+  PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    first_name: PropTypes.string.isRequired,
+    last_name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+  }),
+  PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    username: PropTypes.string.isRequired,
+    filename: PropTypes.string.isRequired,
+    datetime: PropTypes.shape({
+      date: PropTypes.string.isRequired,
+      time: PropTypes.string.isRequired,
+    }).isRequired,
+  }),
+  PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    car: PropTypes.string.isRequired,
+    payment_method: PropTypes.string.isRequired,
+    currency: PropTypes.string.isRequired,
+    city: PropTypes.string.isRequired,
+  }),
+]).isRequired);

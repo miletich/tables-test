@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { formatTitle, toIsoTime, getUniqueVals } from '../helpers';
+import { formatTitle, toIsoTime, getUniqueVals, dataPropType } from '../helpers';
+import SelectList from './SelectList';
 
 const TableFilters = ({ data, onHandleChange }) => (
   <div className="mt-5 mb-5 mx-auto">
@@ -12,44 +13,28 @@ const TableFilters = ({ data, onHandleChange }) => (
           if (key !== 'id') {
             if (key === 'payment_method') {
               return (
-                <div key={key} className="col">
-                  <select
-                    id={key}
-                    className="form-control"
-                    data-filter={key}
-                    onChange={onHandleChange}
-                  >
-                    <option value="">Any payment method</option>
-                    {getUniqueVals(data.map(obj => obj.payment_method))
-                      .sort()
-                      .map(method => (
-                        <option key={method} value={method}>
-                          {method}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+                <SelectList key={key} name={key} onHandleChange={onHandleChange}>
+                  {getUniqueVals(data.map(({ payment_method }) => payment_method))
+                    .sort()
+                    .map(method => (
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
+                    ))}
+                </SelectList>
               );
             } else if (key === 'datetime') {
               return (
-                <div key={key} className="col">
-                  <select
-                    id={key}
-                    className="form-control"
-                    data-filter={key}
-                    onChange={onHandleChange}
-                  >
-                    <option value="">Any time</option>
-                    {getUniqueVals(data
-                        .map(obj => toIsoTime(obj.datetime))
-                        .sort((a, b) => b.diff(a))
-                        .map(time => time.fromNow())).map(time => (
-                          <option key={time} value={time}>
-                            {time}
-                          </option>
-                    ))}
-                  </select>
-                </div>
+                <SelectList key={key} name={key} onHandleChange={onHandleChange}>
+                  {getUniqueVals(data
+                      .map(({ datetime }) => toIsoTime(datetime))
+                      .sort((a, b) => b.diff(a))
+                      .map(time => time.fromNow())).map(time => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                  ))}
+                </SelectList>
               );
             }
             return (
@@ -74,30 +59,7 @@ const TableFilters = ({ data, onHandleChange }) => (
 
 TableFilters.propTypes = {
   onHandleChange: PropTypes.func.isRequired,
-  data: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      first_name: PropTypes.string.isRequired,
-      last_name: PropTypes.string.isRequired,
-      email: PropTypes.string.isRequired,
-    }),
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      username: PropTypes.string.isRequired,
-      filename: PropTypes.string.isRequired,
-      datetime: PropTypes.shape({
-        date: PropTypes.string.isRequired,
-        time: PropTypes.string.isRequired,
-      }).isRequired,
-    }),
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      car: PropTypes.string.isRequired,
-      payment_method: PropTypes.string.isRequired,
-      currency: PropTypes.string.isRequired,
-      city: PropTypes.string.isRequired,
-    }),
-  ]).isRequired).isRequired,
+  data: dataPropType.isRequired,
 };
 
 export default TableFilters;

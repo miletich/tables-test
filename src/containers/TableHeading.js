@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { formatTitle } from '../helpers';
+import { formatTitle, shouldRightAlign } from '../helpers';
 
 class TableHeading extends React.PureComponent {
   constructor() {
@@ -16,26 +16,17 @@ class TableHeading extends React.PureComponent {
 
   render() {
     const { firstRow } = this.props;
-    return firstRow.map(([key, value]) => {
-      if (typeof value === 'number' || (typeof value === 'string' && value.includes('$'))) {
-        return (
-          <th
-            key={key}
-            scope="cell"
-            className="text-right"
-            data-filter={key}
-            onClick={this.sortValues}
-          >
-            {formatTitle(key)}
-          </th>
-        );
-      }
-      return (
-        <th key={key} scope="cell" data-filter={key} onClick={this.sortValues}>
-          {formatTitle(key)}
-        </th>
-      );
-    });
+    return firstRow.map(([key, value]) => (
+      <th
+        key={key}
+        scope="cell"
+        className={shouldRightAlign(value) ? 'text-right' : ''}
+        data-filter={key}
+        onClick={this.sortValues}
+      >
+        {formatTitle(key)}
+      </th>
+    ));
   }
 }
 
