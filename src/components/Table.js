@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { sortByKey, composePredicates, isEqual, isInTimeRange, contains } from '../helpers';
-import TableHeading from './TableHeading';
 import TableFilters from './TableFilters';
+import TableHead from './TableHead';
+import TableHeading from './TableHeading';
 import TableBody from './TableBody';
 import UiMessage from './UiMessage';
 
@@ -78,14 +79,12 @@ class Table extends Component {
         <TableFilters data={data} onHandleChange={this.handleChange} />
         {processedData.length ? (
           <table className="table">
-            <thead>
-              <tr>
-                <TableHeading
-                  firstRow={Object.entries(data[0])}
-                  onHandleTitleClick={this.handleTitleClick}
-                />
-              </tr>
-            </thead>
+            <TableHead>
+              <TableHeading
+                firstRow={Object.entries(data[0])}
+                onHandleTitleClick={this.handleTitleClick}
+              />
+            </TableHead>
             <TableBody data={processedData} />
           </table>
         ) : (
