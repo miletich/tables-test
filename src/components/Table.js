@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  sortByKey,
-  composePredicates,
-  isEqual,
-  isInTimeRange,
-  contains,
-} from '../helpers';
+import { sortByKey, composePredicates, isEqual, isInTimeRange, contains } from '../helpers';
 import TableHeading from './TableHeading';
 import TableFilters from './TableFilters';
 import TableBody from './TableBody';
+import UiMessage from './UiMessage';
 
 class Table extends Component {
   constructor(props) {
@@ -81,17 +76,21 @@ class Table extends Component {
     return (
       <div style={{ minWidth: 970 }}>
         <TableFilters data={data} onHandleChange={this.handleChange} />
-        <table className="table">
-          <thead>
-            <tr>
-              <TableHeading
-                firstRow={Object.entries(data[0])}
-                onHandleTitleClick={this.handleTitleClick}
-              />
-            </tr>
-          </thead>
-          <TableBody data={processedData} />
-        </table>
+        {processedData.length ? (
+          <table className="table">
+            <thead>
+              <tr>
+                <TableHeading
+                  firstRow={Object.entries(data[0])}
+                  onHandleTitleClick={this.handleTitleClick}
+                />
+              </tr>
+            </thead>
+            <TableBody data={processedData} />
+          </table>
+        ) : (
+          <UiMessage>No results</UiMessage>
+        )}
       </div>
     );
   }
