@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import data from '../data/';
-import Table from '../components/Table';
+import Table from '../containers/Table';
 import UiMessage from '../components/UiMessage';
 
 const Tables = () => (

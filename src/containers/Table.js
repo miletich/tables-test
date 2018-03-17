@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { sortByKey, composePredicates, isEqual, isInTimeRange, contains } from '../helpers';
-import TableFilters from './TableFilters';
-import TableHead from './TableHead';
+import TableFilters from '../components/TableFilters';
+import TableHead from '../components/TableHead';
 import TableHeading from './TableHeading';
-import TableBody from './TableBody';
-import UiMessage from './UiMessage';
+import TableBody from '../components/TableBody';
+import UiMessage from '../components/UiMessage';
 
 class Table extends Component {
   constructor(props) {
