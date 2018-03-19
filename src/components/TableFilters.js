@@ -8,6 +8,7 @@ const TableFilters = ({ data, onHandleChange, name }) => (
   <div className="mt-5 mb-5 mx-auto">
     <h2 className="h2 text-center mb-3">{`Filter ${name
       .replace(/([A-Z])/, ' $1')
+      .replace('_', ' ')
       .toLowerCase()} table`}
     </h2>
     <form className="form-inline text-center">

@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import Navigation from './components/Navigation';
-import Tables from './containers/Tables';
+import Table from './containers/Table';
 import UiMessage from './components/UiMessage';
+import withData from './hocs/withData';
 
 const App = () => (
   <div>
@@ -11,8 +12,8 @@ const App = () => (
       <div>
         <Navigation />
         <Switch>
-          <Redirect exact from="/" to="/tables/carPurchases" />
-          <Route path="/tables/:table?" component={Tables} />
+          <Redirect exact from="/" to="/tables/car_purchases" />
+          <Route path="/tables/:table" component={({ match: { params: table } }) => withData(table)(Table)} />
           <Route component={() => <UiMessage>404: Not found</UiMessage>} />
         </Switch>
       </div>
