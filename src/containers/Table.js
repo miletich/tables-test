@@ -95,9 +95,14 @@ class Table extends Component {
   }
 }
 
+Table.defaultProps = {
+  data: [{}],
+  name: '',
+};
+
 Table.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
-  name: PropTypes.string.isRequired,
+  data: PropTypes.arrayOf(PropTypes.object),
+  name: PropTypes.string,
 };
 
 export default Table;

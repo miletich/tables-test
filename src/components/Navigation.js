@@ -1,8 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import data from '../data/';
-
 const Navigation = () => (
   <nav
     style={{
@@ -12,7 +10,7 @@ const Navigation = () => (
       textAlign: 'center',
     }}
   >
-    {Object.keys(data).map(key => (
+    {['car_purchases', 'uploads', 'users'].map(key => (
       <NavLink
         key={key}
         to={`/tables/${key}`}
@@ -24,7 +22,7 @@ const Navigation = () => (
         }}
         activeStyle={{ color: '#fff' }}
       >
-        {key.replace(/([A-Z])/g, ' $1').toUpperCase()}
+        {key.replace(/([A-Z])/g, ' $1').replace('_', ' ').toUpperCase()}
       </NavLink>
     ))}
   </nav>
